@@ -1,26 +1,25 @@
 pipeline {
     agent{label 'JDK11'}
-    Stages { 
-    stage('source code') {
-        steps {
-    git url:'https://github.com/wakaleo/game-of-life.git'
-    branch : 'master'
+    stages { 
+        stage('source code') {
+            steps {
+                git branch : 'master', url: 'https://github.com/wakaleo/game-of-life.git'
+            }
+        }
+        stage ('build the code') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        stage ('reporting') {
+            steps {
+                junit '**/surefire-report/*.xml'
+            }
+        }
+        stage ('test results') {
+            steps {
+                archiveArtifacts artifacts: '**/*.war', followSymlinks: false
+            }
         }
     }
-    stage ('build the code') {
-        steps {
-            sh-script :'mvn compile'
-        }
-    }
-    stage ('reporting') {
-        steps {
-            Junit test Results : '**/surefire-report/*.xml'
-        }
-    }
-    stage ('test results') {
-        steps {
-            archiveArtifacts artifacts: '**/*.war', followSymlinks: false
-        }
-    }
- }
-        
+}
